@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StrataMKT — Orçamentos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F7F5;--surface:#FFFFFF;--surface2:#F1F1EF;--surface3:#E8E8E5;
+  --text:#191919;--text2:#787774;--text3:#AEADA8;
+  --accent:#D95F2B;--accent2:#F5A623;--accent-soft:#FDF0E8;
+  --border:#E3E3E0;--border2:#CCCCC8;
+  --success:#2D9D5B;--success-bg:#EBF8F0;
+  --warn:#C07B2A;--warn-bg:#FEF5E4;
+  --radius:8px;--radius-sm:5px;--radius-lg:12px;
+  --mono:'DM Mono',monospace;--sans:'Inter',system-ui,sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#191919;--surface:#202020;--surface2:#2A2A2A;--surface3:#313131;
+  --text:#E6E6E3;--text2:#848480;--text3:#555552;
+  --accent:#F07040;--accent2:#F5B84A;--accent-soft:#2C1A0E;
+  --border:#313131;--border2:#404040;
+  --success:#3DBD72;--success-bg:#0E2318;
+  --warn:#D4900D;--warn-bg:#1E1500;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;transition:background .2s,color .2s;line-height:1.5}
+a,button{cursor:pointer;font-family:inherit}
+button{border:none;background:none;color:inherit}
+input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:3px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.18);transition:transform .12s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+input[type=range]::-moz-range-thumb{width:17px;height:17px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.18)}
+input[type=number],input[type=text]{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;width:100%;transition:border-color .15s,box-shadow .15s}
+input[type=number]:focus,input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+select{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;color:var(--text);font-family:var(--sans);font-size:13px;outline:none;width:100%;cursor:pointer}
+select:focus{border-color:var(--accent)}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:18px 0;flex-shrink:0;transition:background .2s,border-color .2s}
+.logo{padding:0 14px 22px;font-size:15px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:9px}
+.logo-icon{width:26px;height:26px;background:var(--text);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-icon svg{color:var(--bg)}
+.nav{flex:1;display:flex;flex-direction:column;gap:1px;padding:0 8px}
+.nav-sep{font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;padding:10px 8px 4px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--radius-sm);color:var(--text2);font-size:13px;font-weight:500;transition:all .12s;text-decoration:none}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--surface2);color:var(--text)}
+.n-ico{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:4px;flex-shrink:0}
+.nav-item.active .n-ico{background:var(--accent-soft)}
+.nav-item.active .n-ico svg{color:var(--accent)}
+.sidebar-foot{padding:10px 8px 0;border-top:1px solid var(--border)}
+.theme-btn{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--radius-sm);color:var(--text2);font-size:13px;font-weight:500;transition:all .12s;width:100%}
+.theme-btn:hover{background:var(--surface2);color:var(--text)}
+.main{flex:1;padding:28px 32px 40px;overflow-y:auto}
+.page{display:none}
+.page.active{display:block}
+.ph{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.ph h1{font-size:19px;font-weight:600;letter-spacing:-.3px}
+.ph p{font-size:13px;color:var(--text3);margin-top:3px}
+.calc-layout{display:grid;grid-template-columns:1fr 310px;gap:20px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.svc-group-lbl{font-size:10.5px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;padding:10px 14px 3px;display:flex;align-items:center;gap:6px}
+.svc-row{display:flex;align-items:center;gap:10px;padding:7px 14px;cursor:pointer;transition:background .1s}
+.svc-row:hover{background:var(--surface2)}
+.svc-row.sel{background:var(--accent-soft)}
+.svc-ico{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:var(--surface2);border-radius:6px;flex-shrink:0;color:var(--text2);transition:all .1s}
+.svc-row.sel .svc-ico{background:rgba(217,95,43,.15);color:var(--accent)}
+.svc-name{font-size:13px;font-weight:500;flex:1}
+.svc-hrs{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.svc-chk{color:var(--accent);opacity:0;flex-shrink:0;transition:opacity .1s}
+.svc-row.sel .svc-chk{opacity:1}
+.params-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-top:14px}
+.sl-blk{margin-bottom:0}
+.sl-blk+.sl-blk{margin-top:15px;padding-top:15px;border-top:1px solid var(--border)}
+.sl-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.sl-lbl{font-size:12px;font-weight:500;color:var(--text2)}
+.sl-val{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--accent);background:var(--accent-soft);padding:2px 7px;border-radius:4px;min-width:54px;text-align:center}
+.tick{display:flex;justify-content:space-between;margin-top:5px}
+.tick span{font-size:10px;color:var(--text3)}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.r-hero{padding:18px 18px 14px;border-bottom:1px solid var(--border)}
+.r-eyebrow{font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.r-price{font-family:var(--mono);font-size:32px;font-weight:400;color:var(--text);letter-spacing:-1px;line-height:1}
+.r-rows{padding:2px 0}
+.r-row{display:flex;justify-content:space-between;align-items:center;padding:7px 18px}
+.r-row+.r-row{border-top:1px solid var(--border)}
+.r-lbl{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:5px}
+.r-lbl svg{flex-shrink:0}
+.r-v{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--text)}
+.score-sec{padding:13px 18px;border-top:1px solid var(--border);background:var(--surface2)}
+.score-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.score-lbl{font-size:11px;font-weight:600;color:var(--text2)}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.badge.green{background:var(--success-bg);color:var(--success)}
+.badge.orange{background:var(--warn-bg);color:var(--warn)}
+.badge.red{background:#FDEAEA;color:#C0392B}
+[data-theme="dark"] .badge.red{background:#2A0808;color:#FF6B6B}
+.score-track{background:var(--surface3);border-radius:4px;height:7px;overflow:hidden}
+.score-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .45s cubic-bezier(.4,0,.2,1)}
+.score-nums{display:flex;justify-content:space-between;margin-top:4px}
+.score-nums span{font-size:10px;color:var(--text3)}
+.score-nums .mid{font-family:var(--mono);color:var(--accent)}
+.hourly-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px 16px;margin-top:12px}
+.h-lbl{font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.h-val{font-family:var(--mono);font-size:19px;font-weight:400;color:var(--accent);letter-spacing:-.4px}
+.h-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.setup-banner{display:none;align-items:center;gap:10px;background:var(--accent-soft);border:1px solid rgba(217,95,43,.3);border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--accent);cursor:pointer}
+.setup-banner.show{display:flex}
+.sec-ttl{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.divider{height:1px;background:var(--border);margin:14px 0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px}
+.form-row{margin-bottom:13px}
+.form-row:last-child{margin-bottom:0}
+.form-row label{display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px}
+.hint{font-size:11px;color:var(--text3);margin-top:3px}
+.i-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+.i-row+.i-row{border-top:1px solid var(--border)}
+.i-lbl{font-size:12px;color:var(--text2)}
+.i-val{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--text)}
+.i-val.ac{color:var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--radius-sm);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:all .12s;border:1px solid transparent}
+.btn-p{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn-p:hover{opacity:.82}
+.btn-g{background:var(--surface);color:var(--text2);border-color:var(--border)}
+.btn-g:hover{border-color:var(--border2);color:var(--text);background:var(--surface2)}
+.btn-d{background:var(--surface);color:#C0392B;border-color:#F0C0B4}
+[data-theme="dark"] .btn-d{color:#FF7070;border-color:#5A2020}
+.btn-sm{padding:5px 10px;font-size:12px}
+.tbl-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.tbl-row:last-child{border-bottom:none}
+.tbl-ico{width:30px;height:30px;background:var(--surface2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text2)}
+.tbl-name{font-size:13px;font-weight:500;flex:1}
+.tbl-meta{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.tbl-edit{color:var(--text3);opacity:0;transition:opacity .1s;padding:5px;border-radius:4px}
+.tbl-row:hover .tbl-edit{opacity:1}
+.tbl-edit:hover{background:var(--surface2);color:var(--text2)}
+.cat-hdr{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;padding:14px 0 6px;display:flex;align-items:center;gap:6px}
+.cat-hdr:first-child{padding-top:0}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.32);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .18s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:var(--radius-lg);padding:22px;width:420px;max-width:95vw;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.2);transform:translateY(6px);transition:transform .18s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.modal-ttl{font-size:15px;font-weight:600}
+.modal-x{background:var(--surface2);border-radius:5px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:var(--text2);cursor:pointer;transition:background .12s;border:none;flex-shrink:0}
+.modal-x:hover{background:var(--surface3)}
+.modal-foot{display:flex;gap:7px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+.empty{text-align:center;padding:40px 20px;color:var(--text3)}
+.empty svg{margin:0 auto 10px;display:block}
+.empty p{font-size:13px;line-height:1.6}
+.mobile-nav{display:none}
+.nav-badge{min-width:17px;height:17px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;padding:0 4px;margin-left:auto;line-height:1}
+.nav-badge.hidden{display:none}
+.add-to-prop{display:none;width:100%;align-items:center;justify-content:center;gap:7px;padding:11px 16px;background:var(--accent);color:#fff;border:none;border-radius:0 0 var(--radius-lg) var(--radius-lg);font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;letter-spacing:-.01em}
+.add-to-prop:hover{opacity:.88}
+.add-to-prop.visible{display:flex}
+.add-to-prop.added{background:var(--success)}
+.prop-empty{text-align:center;padding:48px 20px;color:var(--text3)}
+.disc-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-top:12px}
+.disc-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+.disc-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.disc-pill{flex:1;min-width:60px;padding:8px 6px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--surface2);cursor:pointer;text-align:center;transition:all .15s}
+.disc-pill:hover{border-color:var(--border2)}
+.disc-pill.active{border-color:var(--accent);background:var(--accent-soft)}
+.disc-pill.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.disc-pct{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--text)}
+.disc-pill.active .disc-pct{color:var(--accent)}
+.disc-dot{width:6px;height:6px;border-radius:50%;margin:4px auto 0;background:var(--text3)}
+.disc-dot.green{background:var(--success)}
+.disc-dot.orange{background:var(--warn)}
+.disc-dot.red{background:#E24B4A}
+.disc-result{background:var(--surface2);border-radius:var(--radius-sm);padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.disc-new-total{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--text)}
+.disc-saving{font-size:11px;color:var(--success);font-family:var(--mono)}
+.disc-warn-msg{font-size:11px;color:var(--warn);margin-top:6px}
+.disc-ideal-tag{font-size:10px;font-weight:600;color:var(--success);background:var(--success-bg);padding:1px 6px;border-radius:4px;margin-top:3px}
+@media(max-width:700px){.disc-pills{gap:6px}.disc-pill{padding:7px 4px}}
+.prop-empty svg{margin:0 auto 10px;display:block;opacity:.5}
+.prop-empty p{font-size:13px;line-height:1.6}
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.32);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:opacity .15s}
+.confirm-overlay.open{opacity:1;pointer-events:all}
+.confirm-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;width:340px;max-width:92vw;box-shadow:0 16px 48px rgba(0,0,0,.18);transform:translateY(6px);transition:transform .15s}
+.confirm-overlay.open .confirm-box{transform:translateY(0)}
+.confirm-ttl{font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px}
+.confirm-msg{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:18px}
+.confirm-btns{display:flex;gap:8px;justify-content:flex-end}
+.prop-item{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
+.prop-item:last-child{border-bottom:none}
+.prop-ico{width:32px;height:32px;background:var(--surface2);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text2);margin-top:1px}
+.prop-info{flex:1;min-width:0}
+.prop-name{font-size:13px;font-weight:600;color:var(--text)}
+.prop-meta{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:2px}
+.prop-tags{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap}
+.prop-tag{font-size:10px;font-weight:500;padding:1px 6px;border-radius:4px;background:var(--surface2);color:var(--text3)}
+.prop-price{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--text);text-align:right;flex-shrink:0}
+.prop-del{color:var(--text3);opacity:0;padding:4px;border-radius:4px;transition:all .1s;margin-left:4px;flex-shrink:0;border:none;background:none;cursor:pointer}
+.prop-item:hover .prop-del{opacity:1}
+.prop-del:hover{background:var(--surface2);color:#C0392B}
+.prop-total-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.prop-total-left{font-size:12px;color:var(--text2);font-weight:500}
+.prop-total-val{font-family:var(--mono);font-size:26px;font-weight:400;color:var(--text);letter-spacing:-0.6px}
+.prop-total-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.prop-actions{display:flex;gap:8px;flex-shrink:0}
+.prop-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.prop-stat{background:var(--surface2);border-radius:var(--radius);padding:12px}
+.prop-stat-val{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text);letter-spacing:-.3px}
+.prop-stat-lbl{font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;font-weight:600}
+.prop-divider{height:1px;background:var(--border);margin:16px 0}
+@media(max-width:700px){.prop-stats{grid-template-columns:1fr 1fr}.prop-total-bar{flex-direction:column;align-items:flex-start;gap:10px}.prop-actions{width:100%}.prop-actions .btn{flex:1;justify-content:center}}
+@media(max-width:700px){
+  .sidebar{display:none}
+  .layout{flex-direction:column}
+  .main{padding:20px 16px 80px;overflow-y:auto}
+  .ph{margin-bottom:18px;padding-bottom:14px}
+  .ph h1{font-size:17px}
+  .calc-layout{grid-template-columns:1fr;gap:14px}
+  #calc-service-list{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+  .panel{border-radius:var(--radius-lg)}
+  .svc-group-lbl{grid-column:1/-1;padding:4px 2px 2px}
+  .svc-row{flex-direction:column;align-items:center;text-align:center;padding:12px 8px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface)}
+  .svc-row:hover{background:var(--surface2)}
+  .svc-row.sel{border-color:var(--accent);background:var(--accent-soft)}
+  .svc-row .svc-ico{margin-bottom:7px;width:32px;height:32px}
+  .svc-chk{display:none}
+  .svc-hrs{font-size:10px;margin-top:2px}
+  .params-card{border-radius:var(--radius-lg)}
+  .result-card{border-radius:var(--radius-lg)}
+  .r-hero{padding:16px}
+  .r-price{font-size:28px}
+  .hourly-card{border-radius:var(--radius-lg)}
+  .card{border-radius:var(--radius-lg);padding:14px}
+  .form-row>div[style*="display:flex"]{flex-direction:column;gap:6px}
+  .form-row>div[style*="display:flex"] input[style*="width:56"]{width:100%!important}
+  .modal{padding:18px;border-radius:var(--radius-lg)}
+  .mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:900;background:var(--surface);border-top:1px solid var(--border);padding:0;height:60px;justify-content:stretch}
+  .mob-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--text3);font-size:10px;font-weight:500;transition:color .12s;background:none;border:none;cursor:pointer;padding:8px 4px}
+  .mob-tab.active{color:var(--accent)}
+  .mob-tab .m-ico{width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:6px}
+  .mob-tab.active .m-ico{background:var(--accent-soft)}
+  .mob-tab.active .m-ico svg{color:var(--accent)}
+  .ph[style*="display:flex"]{flex-direction:column;gap:10px;align-items:flex-start!important}
+  .ph div{display:flex;flex-direction:column}
+}
+@media(min-width:701px) and (max-width:1000px){
+  .sidebar{width:52px}
+  .sidebar .logo-txt,.nav-lbl,.nav-sep,.theme-lbl{display:none}
+  .nav-item,.theme-btn{justify-content:center}
+  .logo{justify-content:center;padding:0 0 18px}
+  .main{padding:24px 24px 36px}
+  .calc-layout{grid-template-columns:1fr 280px}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <span class="logo-txt">Strata<span style="color:var(--accent)">MKT</span></span>
+  </div>
+  <div class="nav">
+    <div class="nav-sep">Workspace</div>
+    <a class="nav-item active" data-page="calc">
+      <div class="n-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="6" height="6" rx="1.2"/><rect x="14" y="4" width="6" height="6" rx="1.2"/><rect x="4" y="14" width="6" height="6" rx="1.2"/><rect x="14" y="14" width="6" height="6" rx="1.2"/></svg></div>
+      <span class="nav-lbl">Calculadora</span>
+    </a>
+    <a class="nav-item" data-page="services">
+      <div class="n-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <span class="nav-lbl">Serviços</span>
+    </a>
+    <a class="nav-item" data-page="settings">
+      <div class="n-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+      <span class="nav-lbl">Configurações</span>
+    </a>
+    <div class="nav-sep" style="margin-top:8px">Proposta</div>
+    <a class="nav-item" data-page="proposal">
+      <div class="n-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
+      <span class="nav-lbl">Orçamento</span>
+      <span class="nav-badge hidden" id="prop-badge">0</span>
+    </a>
+  </div>
+  <div class="sidebar-foot">
+    <button class="theme-btn" onclick="toggleTheme()">
+      <div class="n-ico"><svg id="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></div>
+      <span class="theme-lbl" id="theme-label">Modo escuro</span>
+    </button>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- CALCULADORA -->
+<div class="page active" id="page-calc">
+  <div class="ph">
+    <h1>Calculadora de orçamento</h1>
+    <p>Escolha o serviço e ajuste os parâmetros para gerar o orçamento ideal.</p>
+  </div>
+  <div class="setup-banner" id="setup-notice" onclick="navigate('settings')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r=".5" fill="currentColor"/></svg>
+    Configure suas despesas em <strong>&nbsp;Configurações&nbsp;</strong> para cálculos precisos →
+  </div>
+  <div class="calc-layout">
+    <div>
+      <div class="sec-ttl">Serviço</div>
+      <div class="panel" id="calc-service-panel">
+        <div id="calc-service-list"></div>
+      </div>
+      <div class="params-card">
+        <div class="sl-blk">
+          <div class="sl-head">
+            <span class="sl-lbl">Complexidade</span>
+            <span class="sl-val" id="complexity-val">5 / 10</span>
+          </div>
+          <input type="range" id="complexity" min="1" max="10" value="5" step="1" oninput="fillSlider(this);updateCalc()">
+          <div class="tick"><span>Simples</span><span>Médio</span><span>Complexo</span></div>
+        </div>
+        <div class="sl-blk">
+          <div class="sl-head">
+            <span class="sl-lbl">Urgência do prazo</span>
+            <span class="sl-val" id="urgency-val">Normal</span>
+          </div>
+          <input type="range" id="urgency" min="1" max="3" value="1" step="1" oninput="fillSlider(this);updateCalc()">
+          <div class="tick"><span>Normal</span><span>Curto</span><span>Express (+50%)</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-ttl" style="margin-bottom:10px">Resultado</div>
+      <div class="result-card">
+        <div class="r-hero">
+          <div class="r-eyebrow">Preço recomendado</div>
+          <div class="r-price" id="r-price">R$ —</div>
+        </div>
+        <div class="r-rows">
+          <div class="r-row">
+            <span class="r-lbl"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Horas estimadas</span>
+            <span class="r-v" id="r-hours">—</span>
+          </div>
+          <div class="r-row">
+            <span class="r-lbl"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Custo operacional</span>
+            <span class="r-v" id="r-cost">—</span>
+          </div>
+          <div class="r-row">
+            <span class="r-lbl"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Margem de lucro</span>
+            <span class="r-v" id="r-margin">—</span>
+          </div>
+          <div class="r-row">
+            <span class="r-lbl"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Faixa de mercado</span>
+            <span class="r-v" id="r-market">—</span>
+          </div>
+        </div>
+        <div class="score-sec">
+          <div class="score-top">
+            <span class="score-lbl">Índice de rentabilidade</span>
+            <span class="badge" id="r-badge">—</span>
+          </div>
+          <div class="score-track"><div class="score-fill" id="score-fill" style="width:0%"></div></div>
+          <div class="score-nums"><span>0</span><span class="mid" id="score-text">—</span><span>100</span></div>
+        </div>
+        <button class="add-to-prop" id="add-btn" onclick="addToProposal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span id="add-btn-txt">Adicionar ao orçamento</span>
+        </button>
+      </div>
+      <div class="hourly-card">
+        <div class="h-lbl">Taxa horária efetiva</div>
+        <div class="h-val" id="hourly-rate">R$ —</div>
+        <div class="h-sub" id="hourly-basis">Configure despesas em Configurações</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVIÇOS -->
+<div class="page" id="page-services">
+  <div class="ph" style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div><h1>Serviços</h1><p>Catálogo de tipos de trabalho com parâmetros de precificação.</p></div>
+    <button class="btn btn-p btn-sm" onclick="openModal()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Adicionar
+    </button>
+  </div>
+  <div class="card" id="services-list"></div>
+</div>
+
+<!-- CONFIGURAÇÕES -->
+<div class="page" id="page-settings">
+  <div class="ph"><h1>Configurações</h1><p>Despesas fixas e parâmetros de precificação pessoal.</p></div>
+  <div style="max-width:450px;display:flex;flex-direction:column;gap:12px">
+    <div class="card">
+      <div class="sec-ttl" style="margin-bottom:13px">Despesas fixas mensais</div>
+      <div class="form-row">
+        <label>Despesa 1 — nome e valor</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="expense1-name" placeholder="Ex: Adobe CC, Aluguel…" style="width:56%">
+          <div style="position:relative;flex:1">
+            <span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3);font-family:var(--mono)">R$</span>
+            <input type="number" id="expense1-val" placeholder="0" style="padding-left:26px" oninput="saveSettings()">
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Despesa 2 — nome e valor</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="expense2-name" placeholder="Ex: Internet, Energia…" style="width:56%">
+          <div style="position:relative;flex:1">
+            <span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3);font-family:var(--mono)">R$</span>
+            <input type="number" id="expense2-val" placeholder="0" style="padding-left:26px" oninput="saveSettings()">
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Horas trabalháveis por mês</label>
+        <input type="number" id="work-hours" placeholder="160" min="20" max="300" oninput="saveSettings()">
+        <div class="hint">Referência: 160h = 8h × 20 dias úteis</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-ttl" style="margin-bottom:12px">Margem de lucro desejada</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:12px;font-weight:500;color:var(--text2)">Margem mínima</span>
+        <span class="sl-val" id="margin-val">40%</span>
+      </div>
+      <input type="range" id="profit-margin" min="10" max="100" value="40" step="5" oninput="document.getElementById('margin-val').textContent=this.value+'%';fillSlider(this);saveSettings()">
+      <div class="tick"><span>10%</span><span>55%</span><span>100%</span></div>
+    </div>
+    <div class="card">
+      <div class="sec-ttl" style="margin-bottom:10px">Resumo financeiro</div>
+      <div class="i-row"><span class="i-lbl">Total despesas / mês</span><span class="i-val" id="s-total">R$ 0</span></div>
+      <div class="i-row"><span class="i-lbl">Custo por hora</span><span class="i-val" id="s-cost">R$ 0,00</span></div>
+      <div class="i-row"><span class="i-lbl">Taxa/hora com margem</span><span class="i-val ac" id="s-rate">R$ 0,00</span></div>
+      <div style="margin-top:12px">
+        <button id="save-settings-btn" class="btn btn-p" onclick="saveSettings()" style="width:100%;justify-content:center">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+          Salvar configurações
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROPOSTA / ORÇAMENTO ACUMULADO -->
+<div class="page" id="page-proposal">
+  <div class="ph" style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div><h1>Orçamento</h1><p>Serviços selecionados e total acumulado da proposta.</p></div>
+  </div>
+
+  <!-- CLIENT + PROJECT + REF -->
+  <div class="card" style="margin-bottom:14px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-row" style="margin:0">
+        <label>Nome do cliente</label>
+        <input type="text" id="prop-client" placeholder="Ex: Ronald Hancock" oninput="updateRef()">
+      </div>
+      <div class="form-row" style="margin:0">
+        <label>Projeto</label>
+        <input type="text" id="prop-project" placeholder="Ex: Identidade Visual Strata" oninput="updateRef()">
+      </div>
+    </div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Referência do orçamento</div>
+        <div style="font-family:var(--mono);font-size:15px;font-weight:500;color:var(--accent)" id="prop-ref-display">——-2604-001</div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);text-align:right;line-height:1.6">
+        <span style="font-family:var(--mono);color:var(--text2)">[INICIAIS]-[AAMM]-[SEQ]</span><br>
+        Ex: RH-2604-003
+      </div>
+    </div>
+  </div>
+  <div id="prop-stats" class="prop-stats" style="display:none">
+    <div class="prop-stat"><div class="prop-stat-lbl">Itens</div><div class="prop-stat-val" id="ps-count">0</div></div>
+    <div class="prop-stat" style="display:flex;align-items:stretch;gap:0;padding:0;overflow:hidden">
+      <div style="flex:1;padding:14px">
+        <div class="prop-stat-lbl">Total horas</div>
+        <div class="prop-stat-val" id="ps-hours">0h</div>
+      </div>
+      <div style="width:1px;background:var(--border);flex-shrink:0"></div>
+      <div style="flex:1;padding:14px">
+        <div class="prop-stat-lbl">Dias</div>
+        <div class="prop-stat-val" id="ps-days">0d</div>
+      </div>
+    </div>
+    <div class="prop-stat"><div class="prop-stat-lbl">Custo base</div><div class="prop-stat-val" id="ps-cost">—</div></div>
+  </div>
+  <div class="card">
+    <div id="prop-list"></div>
+  </div>
+  <div class="prop-total-bar" id="prop-total-bar" style="display:none">
+    <div>
+      <div class="prop-total-left">Total da proposta</div>
+      <div class="prop-total-val" id="prop-total">R$ 0</div>
+      <div class="prop-total-sub" id="prop-total-sub">0 serviços · 0h estimadas</div>
+    </div>
+    <div class="prop-actions">
+      <button class="btn btn-g btn-sm" onclick="clearProposal()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
+        Limpar
+      </button>
+      <button class="btn btn-p btn-sm" onclick="generatePDF()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6M9 15l3 3 3-3"/></svg>
+        <span id="pdf-btn-txt">Gerar PDF</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- DISCOUNT SECTION -->
+  <div class="disc-section" id="disc-section" style="display:none">
+    <div class="disc-title">Desconto sobre o total</div>
+    <div class="disc-pills" id="disc-pills"></div>
+    <div class="disc-result" id="disc-result" style="display:none">
+      <div>
+        <div style="font-size:10px;color:var(--text3);margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Novo total com desconto</div>
+        <div class="disc-new-total" id="disc-new-total">R$ —</div>
+      </div>
+      <div style="text-align:right">
+        <div class="disc-saving" id="disc-saving">— economizado</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px" id="disc-margin-info">—</div>
+      </div>
+    </div>
+    <div class="disc-warn-msg" id="disc-warn" style="display:none"></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-nav">
+  <button class="mob-tab active" data-page="calc" onclick="navigate('calc')">
+    <div class="m-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="6" height="6" rx="1.2"/><rect x="14" y="4" width="6" height="6" rx="1.2"/><rect x="4" y="14" width="6" height="6" rx="1.2"/><rect x="14" y="14" width="6" height="6" rx="1.2"/></svg></div>
+    Calcular
+  </button>
+  <button class="mob-tab" data-page="services" onclick="navigate('services')">
+    <div class="m-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+    Serviços
+  </button>
+  <button class="mob-tab" data-page="settings" onclick="navigate('settings')">
+    <div class="m-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+    Config
+  </button>
+  <button class="mob-tab" data-page="proposal" onclick="navigate('proposal')" style="position:relative">
+    <div class="m-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
+    <span class="nav-badge hidden" id="prop-badge-mob" style="position:absolute;top:6px;right:calc(50% - 16px);min-width:15px;height:15px;font-size:9px">0</span>
+    Proposta
+  </button>
+  <button class="mob-tab" onclick="toggleTheme()">
+    <div class="m-ico"><svg id="theme-icon-mob" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></div>
+    Tema
+  </button>
+</nav>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-ttl" id="modal-title">Novo serviço</div>
+      <button class="modal-x" onclick="closeModal()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="form-row"><label>Nome do serviço</label><input type="text" id="f-name" placeholder="Ex: Landing Page"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px">
+      <div class="form-row" style="margin:0"><label>Categoria</label>
+        <select id="f-cat">
+          <option value="Web">Web & Digital</option><option value="Identidade">Identidade Visual</option>
+          <option value="Impresso">Impresso</option><option value="Apresentação">Apresentação</option>
+          <option value="UX">UX & Protótipo</option><option value="Outro">Outro</option>
+        </select>
+      </div>
+      <div class="form-row" style="margin:0"><label>Ícone (emoji)</label><input type="text" id="f-icon" placeholder="🖥" maxlength="2"></div>
+    </div>
+    <div class="form-row">
+      <label>Horas estimadas — min e max</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="number" id="f-hours-min" placeholder="4" min="1">
+        <span style="color:var(--text3);font-size:13px;flex-shrink:0">–</span>
+        <input type="number" id="f-hours-max" placeholder="20" min="1">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Valor de mercado — R$ min e max</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="position:relative;flex:1"><span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3);font-family:var(--mono)">R$</span><input type="number" id="f-market-min" placeholder="500" style="padding-left:26px"></div>
+        <span style="color:var(--text3);font-size:13px;flex-shrink:0">–</span>
+        <div style="position:relative;flex:1"><span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3);font-family:var(--mono)">R$</span><input type="number" id="f-market-max" placeholder="3000" style="padding-left:26px"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-d btn-sm" id="modal-del" onclick="deleteService()" style="display:none;margin-right:auto">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>Excluir
+      </button>
+      <button class="btn btn-g btn-sm" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-p btn-sm" onclick="saveService()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SVC_SVG = {
+  'Logomarca':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>',
+  'Branding Completo':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>',
+  'Website Completo':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M6 8h.01M9 8h.01M12 8h6"/></svg>',
+  'Landing Page':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v6M7 13h10M7 17h6"/></svg>',
+  'Protótipo UI/UX':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>',
+  'Cartão de Visita':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="7" width="20" height="10" rx="1.5"/><path d="M8 11h.01M6 14h4M14 11h4M14 14h2"/></svg>',
+  'Papelaria Corporativa':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>',
+  'Envelope':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>',
+  'Folder / Brochura':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 3h6l2 3h12a1 1 0 011 1v11a1 1 0 01-1 1H2a1 1 0 01-1-1V4a1 1 0 011-1z"/></svg>',
+  'Apresentação':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+  'Relatório Institucional':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+  'Post / Banner Social':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+};
+const CAT_SVG = {
+  'Web':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>',
+  'Identidade':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  'Impresso':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>',
+  'Apresentação':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+  'UX':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>',
+  'Outro':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r=".5" fill="currentColor"/></svg>',
+};
+
+const DEFAULT_SVCS = [
+  {id:1,name:'Logomarca',cat:'Identidade',hMin:8,hMax:24,mMin:800,mMax:3500},
+  {id:2,name:'Branding Completo',cat:'Identidade',hMin:24,hMax:80,mMin:3000,mMax:15000},
+  {id:3,name:'Website Completo',cat:'Web',hMin:30,hMax:100,mMin:4000,mMax:20000},
+  {id:4,name:'Landing Page',cat:'Web',hMin:8,hMax:24,mMin:1200,mMax:5000},
+  {id:5,name:'Protótipo UI/UX',cat:'UX',hMin:16,hMax:60,mMin:2500,mMax:12000},
+  {id:6,name:'Cartão de Visita',cat:'Impresso',hMin:2,hMax:6,mMin:200,mMax:700},
+  {id:7,name:'Papelaria Corporativa',cat:'Impresso',hMin:8,hMax:20,mMin:800,mMax:3000},
+  {id:8,name:'Envelope',cat:'Impresso',hMin:2,hMax:5,mMin:150,mMax:500},
+  {id:9,name:'Folder / Brochura',cat:'Impresso',hMin:6,hMax:16,mMin:500,mMax:2000},
+  {id:10,name:'Apresentação',cat:'Apresentação',hMin:8,hMax:30,mMin:800,mMax:5000},
+  {id:11,name:'Relatório Institucional',cat:'Apresentação',hMin:12,hMax:40,mMin:1500,mMax:6000},
+  {id:12,name:'Post / Banner Social',cat:'Web',hMin:1,hMax:4,mMin:100,mMax:400},
+];
+
+let services=JSON.parse(localStorage.getItem('studio_svc')||'null')||DEFAULT_SVCS;
+let selId=null,editingId=null;
+function saveData(){localStorage.setItem('studio_svc',JSON.stringify(services));}
+function fmt(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:0,maximumFractionDigits:0});}
+function fmtH(n){return(Math.round(n*10)/10)+'h';}
+function fmtDays(h){
+  const full=Math.floor(h/24);
+  const rem=h%24;
+  if(rem===0) return full+(full===1?' dia':' dias');
+  if(rem<=12){
+    if(full===0) return 'meio dia';
+    return full+(full===1?' dia':' dias')+' e meio';
+  }
+  const d=full+1;
+  return d+(d===1?' dia':' dias');
+}
+function ico(name,cat){return SVC_SVG[name]||CAT_SVG[cat]||CAT_SVG['Outro'];}
+
+function fillSlider(el){
+  const p=((+el.value-+el.min)/(+el.max-+el.min)*100);
+  el.style.background=`linear-gradient(to right,#D95F2B,#F5A623 ${p}%,var(--border) ${p}%)`;
+}
+function initSliders(){document.querySelectorAll('input[type=range]').forEach(fillSlider);}
+
+function cfg(){
+  return{
+    e1:parseFloat(document.getElementById('expense1-val').value)||0,
+    e2:parseFloat(document.getElementById('expense2-val').value)||0,
+    h:parseFloat(document.getElementById('work-hours').value)||160,
+    m:parseFloat(document.getElementById('profit-margin').value)||40,
+  };
+}
+function saveSettings(){
+  const c=cfg();
+  localStorage.setItem('studio_cfg',JSON.stringify({
+    e1v:document.getElementById('expense1-val').value,
+    e1n:document.getElementById('expense1-name').value,
+    e2v:document.getElementById('expense2-val').value,
+    e2n:document.getElementById('expense2-name').value,
+    h:document.getElementById('work-hours').value,
+    m:document.getElementById('profit-margin').value,
+  }));
+  const tot=c.e1+c.e2,costH=c.h?tot/c.h:0,rH=costH*(1+c.m/100);
+  document.getElementById('s-total').textContent=fmt(tot);
+  document.getElementById('s-cost').textContent='R$ '+costH.toFixed(2);
+  document.getElementById('s-rate').textContent='R$ '+rH.toFixed(2);
+  document.getElementById('setup-notice').classList.toggle('show',tot===0);
+  updateCalc();
+  recalcProposal();
+  const btn=document.getElementById('save-settings-btn');
+  if(btn&&!btn.dataset.saving){
+    btn.dataset.saving='1';
+    const orig=btn.innerHTML;
+    btn.style.cssText='background:var(--success);border-color:var(--success);color:#fff';
+    btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Configurações salvas';
+    setTimeout(()=>{btn.innerHTML=orig;btn.style.cssText='';delete btn.dataset.saving;},2200);
+  }
+}
+function loadSettings(){
+  const s=JSON.parse(localStorage.getItem('studio_cfg')||'{}');
+  if(s.e1v)document.getElementById('expense1-val').value=s.e1v;
+  if(s.e1n)document.getElementById('expense1-name').value=s.e1n;
+  if(s.e2v)document.getElementById('expense2-val').value=s.e2v;
+  if(s.e2n)document.getElementById('expense2-name').value=s.e2n;
+  if(s.h)document.getElementById('work-hours').value=s.h;
+  if(s.m){document.getElementById('profit-margin').value=s.m;document.getElementById('margin-val').textContent=s.m+'%';}
+}
+function rate(){
+  const c=cfg();const tot=c.e1+c.e2;
+  if(!tot||!c.h)return null;
+  return{cost:tot/c.h,rate:(tot/c.h)*(1+c.m/100),m:c.m};
+}
+function updateCalc(){
+  const cx=+document.getElementById('complexity').value;
+  const ug=+document.getElementById('urgency').value;
+  document.getElementById('complexity-val').textContent=cx+' / 10';
+  document.getElementById('urgency-val').textContent=['Normal','Prazo curto','Express ×1.5'][ug-1];
+  const r=rate();
+  document.getElementById('hourly-rate').textContent=r?'R$ '+r.rate.toFixed(2):'R$ —';
+  document.getElementById('hourly-basis').textContent=r?`R$ ${r.cost.toFixed(2)}/h custo + ${r.m}% margem`:'Configure despesas em Configurações';
+  const svc=services.find(s=>s.id===selId);
+  if(!svc){
+    ['r-price','r-hours','r-cost','r-margin','r-market'].forEach(id=>document.getElementById(id).textContent='—');
+    document.getElementById('r-badge').textContent='—';document.getElementById('r-badge').className='badge';
+    document.getElementById('score-fill').style.width='0%';document.getElementById('score-text').textContent='—';
+    document.getElementById('add-btn').classList.remove('visible');
+    return;
+  }
+  const t=(cx-1)/9,est=(svc.hMin+(svc.hMax-svc.hMin)*t)*1.2,um=ug===1?1:ug===2?1.2:1.5;
+  let rec,oc,mg;
+  if(r){oc=r.cost*est;rec=Math.max(r.rate*est,svc.mMin)*um;mg=(rec-oc)/oc*100;}
+  else{oc=null;rec=(svc.mMin+(svc.mMax-svc.mMin)*t)*um;mg=null;}
+  document.getElementById('r-price').textContent=fmt(Math.round(rec));
+  document.getElementById('r-hours').textContent=fmtH(est);
+  document.getElementById('r-cost').textContent=oc!==null?fmt(Math.round(oc)):'—';
+  document.getElementById('r-margin').textContent=mg!==null?Math.round(mg)+'%':'—';
+  document.getElementById('r-market').textContent=fmt(svc.mMin)+' – '+fmt(svc.mMax);
+  const addBtn=document.getElementById('add-btn');
+  addBtn.classList.add('visible');
+  if(!addBtn.classList.contains('added'))document.getElementById('add-btn-txt').textContent='Adicionar ao orçamento';
+  const sc=mg!==null?Math.min(100,Math.max(0,mg/200*100)):50;
+  document.getElementById('score-fill').style.width=Math.round(sc)+'%';
+  document.getElementById('score-text').textContent=Math.round(sc)+'/100';
+  const b=document.getElementById('r-badge');
+  if(sc>=60){b.textContent='Excelente';b.className='badge green';}
+  else if(sc>=30){b.textContent='Bom';b.className='badge orange';}
+  else{b.textContent='Revisar';b.className='badge red';}
+}
+function renderCalcList(){
+  const el=document.getElementById('calc-service-list');
+  if(!services.length){el.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Nenhum serviço. Vá em Serviços.</div>';return;}
+  const cats=[...new Set(services.map(s=>s.cat))];
+  el.innerHTML=cats.map(cat=>
+    `<div class="svc-group-lbl">${CAT_SVG[cat]||''}${cat}</div>`+
+    services.filter(s=>s.cat===cat).map(s=>`
+      <div class="svc-row${s.id===selId?' sel':''}" onclick="selSvc(${s.id})">
+        <div class="svc-ico">${ico(s.name,s.cat)}</div>
+        <div style="flex:1;min-width:0">
+          <div class="svc-name">${s.name}</div>
+          <div class="svc-hrs">${s.hMin}–${s.hMax}h &middot; ${fmt(s.mMin)}–${fmt(s.mMax)}</div>
+        </div>
+        <div class="svc-chk"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+      </div>`).join('')
+  ).join('');
+}
+function selSvc(id){selId=id;renderCalcList();updateCalc();}
+function renderServices(){
+  const el=document.getElementById('services-list');
+  if(!services.length){el.innerHTML='<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>Nenhum serviço.<br>Clique em "Adicionar" para começar.</p></div>';return;}
+  const cats=[...new Set(services.map(s=>s.cat))];
+  el.innerHTML=cats.map((cat,ci)=>
+    `<div class="cat-hdr"${ci===0?' style="padding-top:0"':''}>${CAT_SVG[cat]||''}${cat}</div>`+
+    services.filter(s=>s.cat===cat).map(s=>`
+      <div class="tbl-row">
+        <div class="tbl-ico">${ico(s.name,s.cat)}</div>
+        <div>
+          <div class="tbl-name">${s.name}</div>
+          <div class="tbl-meta">${s.hMin}–${s.hMax}h &middot; ${fmt(s.mMin)} – ${fmt(s.mMax)}</div>
+        </div>
+        <button class="tbl-edit" onclick="openModal(${s.id})"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      </div>`).join('')
+  ).join('');
+}
+function openModal(id=null){
+  editingId=id;
+  document.getElementById('modal-title').textContent=id?'Editar serviço':'Novo serviço';
+  document.getElementById('modal-del').style.display=id?'inline-flex':'none';
+  if(id){const s=services.find(x=>x.id===id);
+    document.getElementById('f-name').value=s.name;document.getElementById('f-cat').value=s.cat;
+    document.getElementById('f-icon').value=s.icon||'';document.getElementById('f-hours-min').value=s.hMin;
+    document.getElementById('f-hours-max').value=s.hMax;document.getElementById('f-market-min').value=s.mMin;
+    document.getElementById('f-market-max').value=s.mMax;
+  }else['f-name','f-icon','f-hours-min','f-hours-max','f-market-min','f-market-max'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('modal').classList.add('open');
+  setTimeout(()=>document.getElementById('f-name').focus(),180);
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function saveService(){
+  const name=document.getElementById('f-name').value.trim();if(!name)return;
+  const svc={id:editingId||Date.now(),name,cat:document.getElementById('f-cat').value,
+    icon:document.getElementById('f-icon').value||'',
+    hMin:parseFloat(document.getElementById('f-hours-min').value)||2,
+    hMax:parseFloat(document.getElementById('f-hours-max').value)||8,
+    mMin:parseFloat(document.getElementById('f-market-min').value)||200,
+    mMax:parseFloat(document.getElementById('f-market-max').value)||1000};
+  services=editingId?services.map(s=>s.id===editingId?svc:s):[...services,svc];
+  saveData();closeModal();renderServices();renderCalcList();
+}
+function deleteService(){
+  const idToDelete=editingId;
+  const svc=services.find(s=>s.id===idToDelete);
+  if(!svc)return;
+  showConfirm(
+    'Excluir serviço',
+    `Remover "${svc.name}" do catálogo permanentemente? Esta ação não pode ser desfeita.`,
+    [
+      {label:'Cancelar',action:()=>{}},
+      {label:'Excluir',primary:true,action:()=>{
+        services=services.filter(s=>s.id!==idToDelete);
+        if(selId===idToDelete)selId=null;
+        saveData();closeModal();renderServices();renderCalcList();updateCalc();
+      }}
+    ]
+  );
+}
+function navigate(pg){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item,.mob-tab[data-page]').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+pg).classList.add('active');
+  document.querySelectorAll('[data-page="'+pg+'"]').forEach(n=>n.classList.add('active'));
+  if(pg==='services')renderServices();
+  if(pg==='calc'){renderCalcList();updateCalc();}
+  if(pg==='settings'){saveSettings();setTimeout(initSliders,50);}
+  if(pg==='proposal'){
+    const sc=localStorage.getItem('studio_prop_client');
+    const sp=localStorage.getItem('studio_prop_project');
+    if(sc)document.getElementById('prop-client').value=sc;
+    if(sp)document.getElementById('prop-project').value=sp;
+    renderProposal();updateRef();
+  }
+}
+document.querySelectorAll('.nav-item').forEach(i=>i.addEventListener('click',e=>{e.preventDefault();navigate(i.dataset.page);}));
+function toggleTheme(){
+  const d=document.documentElement,isDark=d.getAttribute('data-theme')==='dark',nx=isDark?'light':'dark';
+  d.setAttribute('data-theme',nx);
+  document.getElementById('theme-label').textContent=isDark?'Modo escuro':'Modo claro';
+  const path=isDark?'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>':'<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+  document.getElementById('theme-icon').innerHTML=path;
+  const mob=document.getElementById('theme-icon-mob');if(mob)mob.innerHTML=path;
+  localStorage.setItem('studio_theme',nx);
+  setTimeout(initSliders,50);
+}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+let proposal=JSON.parse(localStorage.getItem('studio_prop')||'[]');
+let activeDiscount=0; // 0 = no discount
+function saveProp(){localStorage.setItem('studio_prop',JSON.stringify(proposal));}
+function updateBadge(){
+  const n=proposal.length;
+  document.querySelectorAll('#prop-badge,#prop-badge-mob').forEach(b=>{
+    b.textContent=n;b.classList.toggle('hidden',n===0);
+  });
+}
+function removeFromProposal(uid){
+  proposal=proposal.filter(i=>i.uid!==uid);
+  saveProp();updateBadge();renderProposal();
+}
+function getInitials(name){
+  if(!name||!name.trim())return '——';
+  return name.trim().split(/\s+/).map(w=>w[0].toUpperCase()).slice(0,2).join('');
+}
+function getYYMM(){
+  const d=new Date();
+  return String(d.getFullYear()).slice(2)+String(d.getMonth()+1).padStart(2,'0');
+}
+function getNextSeq(prefix){
+  const key='studio_seq_'+prefix;
+  const n=(parseInt(localStorage.getItem(key)||'0'))+1;
+  localStorage.setItem(key,String(n));
+  return String(n).padStart(3,'0');
+}
+function peekSeq(prefix){
+  const key='studio_seq_'+prefix;
+  return String((parseInt(localStorage.getItem(key)||'0'))+1).padStart(3,'0');
+}
+function updateRef(){
+  const client=document.getElementById('prop-client').value;
+  const yymm=getYYMM();
+  const initials=getInitials(client);
+  const next=peekSeq(yymm);
+  document.getElementById('prop-ref-display').textContent=`${initials}-${yymm}-${next}`;
+  localStorage.setItem('studio_prop_client',document.getElementById('prop-client').value);
+  localStorage.setItem('studio_prop_project',document.getElementById('prop-project').value);
+}
+function buildRef(){
+  const client=document.getElementById('prop-client').value;
+  const yymm=getYYMM();
+  const initials=getInitials(client);
+  const seq=getNextSeq(yymm);
+  return`${initials}-${yymm}-${seq}`;
+}
+function generatePDF(){
+  if(!proposal.length)return;
+  const btn=document.getElementById('pdf-btn-txt');
+  btn.textContent='Gerando…';
+
+  const total=proposal.reduce((a,i)=>a+i.price,0);
+  const finalTotal=activeDiscount>0?Math.round(total*(1-activeDiscount/100)):total;
+  const totalH=proposal.reduce((a,i)=>a+i.hours,0);
+  const today=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  const clientName=document.getElementById('prop-client').value.trim()||'Cliente';
+  const projectName=document.getElementById('prop-project').value.trim()||'Proposta de Serviços';
+  const ref=buildRef();
+  document.getElementById('prop-ref-display').textContent=ref;
+
+  const discRow=activeDiscount>0?`
+    <tr style="background:#FDF0E8">
+      <td class="num" style="color:#D95F2B">%</td>
+      <td><div class="sn" style="color:#D95F2B">Desconto de ${activeDiscount}%</div></td>
+      <td class="hrs">—</td>
+      <td class="price" style="color:#D95F2B">− ${fmt(total-finalTotal)}</td>
+    </tr>`:'';
+
+  const rows=proposal.map((item,i)=>`
+    <tr class="${i%2===0?'alt':''}">
+      <td class="num">${i+1}</td>
+      <td><div class="sn">${item.name}</div><div class="sm">${item.cat} · Complexidade ${item.cx}/10 · ${item.urgLabel}</div></td>
+      <td class="hrs">${item.hours}h</td>
+      <td class="price">${fmt(item.price)}</td>
+    </tr>`).join('')+discRow;
+
+  const doc=`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>${ref} — ${clientName}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;font-size:10pt;color:#191919;background:#fff;line-height:1.4;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@page{size:A4;margin:0}
+.page{width:210mm;min-height:297mm;margin:0 auto;display:flex;flex-direction:column}
+/* HEADER */
+.hd{background:#191919;color:#fff;padding:7mm 16mm 6mm;position:relative;flex-shrink:0}
+.hd::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;background:#D95F2B}
+.logo{font-size:17pt;font-weight:700;letter-spacing:-.5px;margin-bottom:1mm}
+.logo b{color:#D95F2B;font-weight:700}
+.tagline{font-size:8pt;color:#848480;margin-bottom:3mm}
+.meta{display:flex;justify-content:space-between;align-items:flex-end}
+.dt{font-size:11pt;font-weight:600;margin-bottom:.5mm}
+.ds{font-size:8.5pt;color:#848480}
+.mr{text-align:right}
+.ref{font-family:'DM Mono',monospace;font-size:9pt;color:#D95F2B;font-weight:500}
+.date{font-size:8pt;color:#848480;margin-top:.5mm}
+.cli{margin-top:3mm;display:flex;gap:6mm;align-items:flex-start}
+.cl{font-size:7pt;font-weight:600;color:#848480;text-transform:uppercase;letter-spacing:.07em;margin-bottom:1mm}
+.cv{font-size:9.5pt;font-weight:600;color:#fff}
+.sep{width:1px;background:rgba(255,255,255,.2);align-self:stretch;margin-top:4mm}
+/* BODY */
+.body{padding:7mm 16mm 10mm;flex:1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;margin-bottom:6mm}
+.stat{background:#F5F4F0;border-radius:4px;padding:3mm 4mm}
+.sl{font-size:7pt;font-weight:600;color:#AEADA8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:1mm}
+.sv{font-family:'DM Mono',monospace;font-size:12pt;font-weight:500;color:#191919}
+.sec{font-size:7.5pt;font-weight:700;color:#D95F2B;text-transform:uppercase;letter-spacing:.09em;margin-bottom:2mm;padding-bottom:1.5mm;border-bottom:1px solid #E3E3E0}
+table{width:100%;border-collapse:collapse;margin-bottom:5mm}
+thead tr{background:#191919;color:#fff}
+th{padding:2mm 3mm;font-size:7.5pt;font-weight:600;text-align:left}
+th:last-child{text-align:right}
+th:nth-child(3){text-align:center}
+tr.alt{background:#F9F9F7}
+td{padding:2.2mm 3mm;border-bottom:1px solid #EDEDEB;vertical-align:top}
+.num{width:8mm;font-family:'DM Mono',monospace;font-size:8pt;color:#AEADA8;vertical-align:middle}
+.sn{font-size:9.5pt;font-weight:600;margin-bottom:.5mm}
+.sm{font-size:7.5pt;color:#AEADA8}
+.hrs{width:16mm;font-family:'DM Mono',monospace;font-size:8.5pt;color:#787774;vertical-align:middle;text-align:center}
+.price{width:28mm;font-family:'DM Mono',monospace;font-size:10pt;font-weight:600;text-align:right;vertical-align:middle}
+/* TOTAL */
+.tot{background:#191919;border-radius:5px;padding:4mm 5mm 4mm 8mm;margin-bottom:5mm;position:relative;overflow:hidden}
+.tot::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#D95F2B}
+.tl{font-size:7.5pt;color:#848480;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:.5mm}
+.tv{font-family:'DM Mono',monospace;font-size:17pt;font-weight:500;color:#fff;letter-spacing:-.5px}
+.tm{font-size:7.5pt;color:#555552;margin-top:.5mm}
+/* NOTE */
+.note{background:#FDF0E8;border-left:3px solid #D95F2B;padding:2.5mm 3.5mm;border-radius:0 4px 4px 0;margin-bottom:5mm}
+.note p{font-size:7.5pt;color:#787774;line-height:1.5}
+.note b{color:#D95F2B}
+/* FOOTER */
+.ft{padding:3mm 16mm;border-top:1px solid #E3E3E0;display:flex;justify-content:space-between;flex-shrink:0}
+.ft span{font-size:7pt;color:#AEADA8;font-family:'DM Mono',monospace}
+@media screen{body{background:#e8e8e5}.page{box-shadow:0 4px 24px rgba(0,0,0,.15);margin:8mm auto}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="hd">
+    <div class="logo">Strata<b>MKT</b></div>
+    <div class="tagline">Estratégia · Design · Marketing Digital</div>
+    <div class="meta">
+      <div>
+        <div class="dt">Proposta Comercial de Serviços</div>
+        <div class="ds">${proposal.length} serviço${proposal.length>1?'s':''} &nbsp;·&nbsp; ${Math.round(totalH*10)/10}h estimadas no total</div>
+        <div class="cli">
+          <div><div class="cl">Cliente</div><div class="cv">${clientName}</div></div>
+          <div class="sep"></div>
+          <div><div class="cl">Projeto</div><div class="cv">${projectName}</div></div>
+        </div>
+      </div>
+      <div class="mr">
+        <div class="ref">${ref}</div>
+        <div class="date">${today}</div>
+      </div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="stats">
+      <div class="stat"><div class="sl">Itens</div><div class="sv">${proposal.length}</div></div>
+      <div class="stat"><div class="sl">Total de horas</div><div class="sv">${Math.round(totalH*10)/10}h</div></div>
+      <div class="stat"><div class="sl">Dias estimados</div><div class="sv">${fmtDays(totalH)}</div></div>
+    </div>
+    <div class="sec">Serviços detalhados</div>
+    <table>
+      <thead><tr><th>#</th><th>Serviço</th><th>Horas</th><th>Valor</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="tot">
+      <div class="tl">Total da proposta</div>
+      <div class="tv">${fmt(finalTotal)}</div>
+      <div class="tm">${proposal.length} serviço${proposal.length>1?'s':''} · ${Math.round(totalH*10)/10}h${activeDiscount>0?' · Desconto '+activeDiscount+'%':''} · ${today}</div>
+    </div>
+    <div class="note"><p><b>Observação:</b> Valores estimados com base em complexidade e urgência declaradas. Preços finais podem variar após briefing detalhado. Validade: 30 dias.</p></div>
+  </div>
+  <div class="ft">
+    <span>StrataMKT — Proposta de Serviços</span>
+    <span>${ref} · ${today}</span>
+  </div>
+</div>
+<script>window.addEventListener('load',function(){setTimeout(function(){window.print();},600);});<\/script>
+</body></html>`;
+
+  try{
+    const blob=new Blob([doc],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const iframe=document.createElement('iframe');
+    iframe.style.cssText='position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:0;visibility:hidden';
+    document.body.appendChild(iframe);
+    iframe.onload=function(){
+      try{
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+        btn.textContent='Gerar PDF';
+      }catch(e){
+        window.open(url,'_blank');
+        btn.textContent='Gerar PDF';
+      }
+      setTimeout(()=>{
+        if(document.body.contains(iframe))document.body.removeChild(iframe);
+        URL.revokeObjectURL(url);
+      },5000);
+    };
+    iframe.src=url;
+  }catch(e){
+    console.error(e);
+    btn.textContent='Gerar PDF';
+  }
+}
+
+function renderProposal(){
+  const el=document.getElementById('prop-list');
+  const stats=document.getElementById('prop-stats');
+  const bar=document.getElementById('prop-total-bar');
+  const disc=document.getElementById('disc-section');
+  if(!proposal.length){
+    el.innerHTML='<div class="prop-empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><p>Nenhum serviço adicionado ainda.<br>Use a Calculadora para adicionar itens.</p></div>';
+    stats.style.display='none';bar.style.display='none';disc.style.display='none';
+    activeDiscount=0;return;
+  }
+  const total=proposal.reduce((a,i)=>a+i.price,0);
+  const totalHrs=proposal.reduce((a,i)=>a+i.hours,0);
+  const totalCost=proposal.filter(i=>i.cost).reduce((a,i)=>a+(i.cost||0),0);
+  document.getElementById('ps-count').textContent=proposal.length;
+  document.getElementById('ps-hours').textContent=Math.round(totalHrs*10)/10+'h';
+  document.getElementById('ps-days').textContent=fmtDays(totalHrs);
+  document.getElementById('ps-cost').textContent=totalCost?fmt(totalCost):'—';
+  document.getElementById('prop-total').textContent=fmt(total);
+  document.getElementById('prop-total-sub').textContent=proposal.length+' serviço'+(proposal.length>1?'s':'')+' · '+Math.round(totalHrs*10)/10+'h estimadas';
+  stats.style.display='grid';bar.style.display='flex';disc.style.display='block';
+  el.innerHTML=proposal.map(item=>`
+    <div class="prop-item">
+      <div class="prop-ico">${ico(item.name,item.cat)}</div>
+      <div class="prop-info">
+        <div class="prop-name">${item.name}</div>
+        <div class="prop-meta">${item.hours}h · ${item.cost?fmt(item.cost)+' custo':'s/ custo calc.'}</div>
+        <div class="prop-tags">
+          <span class="prop-tag">Complexidade ${item.cx}/10</span>
+          <span class="prop-tag">${item.urgLabel}</span>
+          <span class="prop-tag">${item.cat}</span>
+        </div>
+      </div>
+      <div class="prop-price">${fmt(item.price)}</div>
+      <button class="prop-del" onclick="removeFromProposal(${item.uid})" title="Remover">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`).join('');
+  renderDiscounts(total,totalCost);
+}
+
+function renderDiscounts(total,totalCost){
+  const s=cfg();
+  const desiredMargin=s.m;    // piso mínimo configurado
+  const hasCost=totalCost>0;
+
+  // Margem atual antes de qualquer desconto
+  const currentMargin=hasCost?(total-totalCost)/totalCost*100:null;
+
+  // Desconto máximo: mantém margem >= desiredMargin
+  let maxDiscount=20;
+  if(hasCost){
+    const minPrice=totalCost*(1+desiredMargin/100);
+    maxDiscount=Math.max(0,Math.floor((1-minPrice/total)*100));
+    maxDiscount=Math.min(maxDiscount,20);
+  }
+
+  // Desconto ideal = ponto de equilíbrio entre margem atual e margem mínima
+  // Margem ideal = média entre margem atual e piso configurado
+  // Desconto correspondente a essa margem ideal
+  let idealDiscount=0;
+  if(hasCost&&currentMargin!==null&&maxDiscount>0){
+    const idealMargin=(currentMargin+desiredMargin)/2;
+    const idealPrice=totalCost*(1+idealMargin/100);
+    const rawIdeal=(1-idealPrice/total)*100;
+    // Arredonda para múltiplo de 5 mais próximo, dentro do intervalo permitido
+    idealDiscount=Math.min(Math.max(Math.round(rawIdeal/5)*5,5),maxDiscount);
+  }
+
+  const options=[5,10,15,20];
+
+  const container=document.getElementById('disc-pills');
+  container.innerHTML=options.map(pct=>{
+    const allowed=pct<=maxDiscount;
+    const isIdeal=pct===idealDiscount&&idealDiscount>0;
+    const isActive=pct===activeDiscount;
+    let dotClass='disc-dot';
+    if(!hasCost){dotClass+=' orange';}
+    else if(allowed){dotClass+=' green';}
+    else{dotClass+=' red';}
+    return`<div class="disc-pill${isActive?' active':''}${!allowed?' disabled':''}" onclick="applyDiscount(${pct},${total})">
+      <div class="disc-pct">${pct}%</div>
+      <div class="${dotClass}"></div>
+      ${isIdeal?`<div class="disc-ideal-tag">ideal</div>`:''}
+    </div>`;
+  }).join('');
+
+  // Add "sem desconto" option
+  const noneActive=activeDiscount===0;
+  container.innerHTML=`<div class="disc-pill${noneActive?' active':''}" onclick="applyDiscount(0,${total})" style="flex:0 0 auto;min-width:54px">
+    <div class="disc-pct" style="font-size:11px">Nenhum</div>
+    <div class="disc-dot${noneActive?' green':''}"></div>
+  </div>`+container.innerHTML;
+
+  // Warn if no discount possible
+  const warn=document.getElementById('disc-warn');
+  if(hasCost&&maxDiscount===0){
+    warn.textContent=`Margem insuficiente para desconto. A margem atual não permite desconto sem cair abaixo de ${desiredMargin}%.`;
+    warn.style.display='block';
+  }else if(!hasCost){
+    warn.textContent='Configure despesas fixas em Configurações para calcular o desconto máximo com segurança.';
+    warn.style.display='block';
+  }else{
+    warn.style.display='none';
+  }
+
+  // Show result
+  if(activeDiscount>0){
+    const newTotal=Math.round(total*(1-activeDiscount/100));
+    const saving=total-newTotal;
+    let marginTxt='';
+    if(hasCost){
+      const newMargin=(newTotal-totalCost)/totalCost*100;
+      marginTxt=`Margem resultante: ${Math.round(newMargin)}%`;
+    }
+    document.getElementById('disc-new-total').textContent=fmt(newTotal);
+    document.getElementById('disc-saving').textContent=`${fmt(saving)} economizado`;
+    document.getElementById('disc-margin-info').textContent=marginTxt;
+    document.getElementById('disc-result').style.display='flex';
+  }else{
+    document.getElementById('disc-result').style.display='none';
+  }
+}
+
+function applyDiscount(pct,total){
+  activeDiscount=pct;
+  const totalCost=proposal.filter(i=>i.cost).reduce((a,i)=>a+(i.cost||0),0);
+  renderDiscounts(total,totalCost);
+  const sub=proposal.length+' serviço'+(proposal.length>1?'s':'')+' · '+Math.round(proposal.reduce((a,i)=>a+i.hours,0)*10)/10+'h estimadas'+(pct>0?` · ${pct}% desc.`:'');
+  document.getElementById('prop-total-sub').textContent=sub;
+  // Keep original total unchanged — discounted value shows only in the discount section below
+}
+
+// CONFIRM DIALOG
+function showConfirm(title,msg,buttons){
+  const ov=document.getElementById('confirm-overlay');
+  document.getElementById('confirm-ttl').textContent=title;
+  document.getElementById('confirm-msg').textContent=msg;
+  const btns=document.getElementById('confirm-btns');
+  btns.innerHTML='';
+  buttons.forEach(b=>{
+    const el=document.createElement('button');
+    el.className='btn btn-sm '+(b.primary?'btn-p':'btn-g');
+    el.textContent=b.label;
+    el.onclick=()=>{ov.classList.remove('open');b.action();};
+    btns.appendChild(el);
+  });
+  ov.classList.add('open');
+  ov.onclick=e=>{if(e.target===ov)ov.classList.remove('open');};
+}
+
+function buildItem(svc,cx,ug){
+  const t=(cx-1)/9,est=(svc.hMin+(svc.hMax-svc.hMin)*t)*1.2,um=ug===1?1:ug===2?1.2:1.5;
+  const r=rate();let rec,oc;
+  if(r){oc=r.cost*est;rec=Math.max(r.rate*est,svc.mMin)*um;}
+  else{oc=null;rec=(svc.mMin+(svc.mMax-svc.mMin)*t)*um;}
+  const urgLabels=['Normal','Prazo curto','Express'];
+  return{uid:Date.now(),svcId:svc.id,name:svc.name,cat:svc.cat,
+    cx,ug,urgLabel:urgLabels[ug-1],hours:Math.round(est*10)/10,
+    cost:oc?Math.round(oc):null,price:Math.round(rec)};
+}
+
+function recalcProposal(){
+  if(!proposal.length)return;
+  proposal=proposal.map(item=>{
+    const svc=services.find(s=>s.id===item.svcId);
+    if(!svc)return item; // serviço foi excluído do catálogo — mantém como está
+    const rebuilt=buildItem(svc,item.cx,item.ug);
+    rebuilt.uid=item.uid; // preserva o uid original
+    return rebuilt;
+  });
+  saveProp();
+  // Se estiver na página de orçamento, re-renderiza
+  if(document.getElementById('page-proposal').classList.contains('active')){
+    renderProposal();
+  }
+}
+
+function flashAdded(success){
+  const btn=document.getElementById('add-btn'),txt=document.getElementById('add-btn-txt');
+  btn.classList.add('added');txt.textContent=success?'Adicionado!':'Atualizado!';
+  setTimeout(()=>{btn.classList.remove('added');txt.textContent='Adicionar ao orçamento';},1800);
+}
+
+function addToProposal(){
+  const svc=services.find(s=>s.id===selId);if(!svc)return;
+  const cx=+document.getElementById('complexity').value;
+  const ug=+document.getElementById('urgency').value;
+  const existing=proposal.find(i=>i.svcId===svc.id);
+  if(existing){
+    showConfirm(
+      'Serviço já no orçamento',
+      `"${svc.name}" já foi adicionado. Deseja incluir outro item ou atualizar o existente com os novos parâmetros?`,
+      [
+        {label:'Cancelar',action:()=>{}},
+        {label:'Atualizar existente',action:()=>{
+          const item=buildItem(svc,cx,ug);item.uid=existing.uid;
+          proposal=proposal.map(i=>i.uid===existing.uid?item:i);
+          saveProp();updateBadge();flashAdded(false);
+        }},
+        {label:'Adicionar outro',primary:true,action:()=>{
+          proposal.push(buildItem(svc,cx,ug));
+          saveProp();updateBadge();flashAdded(true);
+        }},
+      ]
+    );
+    return;
+  }
+  proposal.push(buildItem(svc,cx,ug));
+  saveProp();updateBadge();flashAdded(true);
+}
+
+function clearProposal(){
+  showConfirm(
+    'Limpar orçamento',
+    'Todos os serviços serão removidos. Esta ação não pode ser desfeita.',
+    [
+      {label:'Cancelar',action:()=>{}},
+      {label:'Limpar tudo',primary:true,action:()=>{
+        proposal=[];saveProp();updateBadge();renderProposal();
+      }},
+    ]
+  );
+}
+
+// INIT
+const st=localStorage.getItem('studio_theme');
+if(st){
+  document.documentElement.setAttribute('data-theme',st);
+  document.getElementById('theme-label').textContent=st==='dark'?'Modo claro':'Modo escuro';
+  if(st==='dark')document.getElementById('theme-icon').innerHTML='<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+}
+loadSettings();saveSettings();renderCalcList();updateCalc();updateBadge();
+const _sc=localStorage.getItem('studio_prop_client');
+const _sp=localStorage.getItem('studio_prop_project');
+if(_sc)document.getElementById('prop-client').value=_sc;
+if(_sp)document.getElementById('prop-project').value=_sp;
+updateRef();
+setTimeout(initSliders,100);
+</script>
+
+<!-- CONFIRM MODAL -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-ttl" id="confirm-ttl"></div>
+    <div class="confirm-msg" id="confirm-msg"></div>
+    <div class="confirm-btns" id="confirm-btns"></div>
+  </div>
+</div>
+
+</body>
+</html>
